@@ -3,6 +3,7 @@ package com.tom.funfacts
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.room.Room
 import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
@@ -11,7 +12,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        readQuestions()
+//        readQuestions()
+        val db = Room.databaseBuilder(
+            this,
+            QuizDatabase::class.java,
+            "quiz.db"
+        ).build()
+        db.quizDao().add(
+            Quiz(1,
+                "aa",
+                "xxyyzz",
+//                listOf("xx","yy","zz"),
+                1))
     }
 
     private fun readQuestions() {
@@ -32,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Answer: ${answers.getString(j)}");
                 baggg.add(answers.getString(j))
             }
-            bag.add(Quiz(q, baggg, correct))
+            bag.add(Quiz(1, q, "xxyyzz", correct))
             Log.d(TAG, "question: $q $correct $answers");
         }
 
