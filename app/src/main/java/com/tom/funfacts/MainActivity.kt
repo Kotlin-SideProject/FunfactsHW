@@ -21,18 +21,18 @@ class MainActivity : AppCompatActivity() {
                 .readText()
         val questions = JSONArray(data)
 //        val bag = listOf<Question>()
-//        val bag = mu
+        val bag = mutableListOf<Quiz>()
         for (i in 0..questions.length()-1) {
             val obj = questions.getJSONObject(i)
             val q = obj.getString("question")
             val correct = obj.getInt("correct")
             val answers = obj.getJSONArray("answers")
-            val baggg = listOf<String>()
+            val baggg = mutableListOf<String>()
             for (j in 0..answers.length()-1) {
                 Log.d(TAG, "Answer: ${answers.getString(j)}");
-//                baggg.add()
+                baggg.add(answers.getString(j))
             }
-//            Question(q, )
+            bag.add(Quiz(q, baggg, correct))
             Log.d(TAG, "question: $q $correct $answers");
         }
 
