@@ -6,6 +6,7 @@ import android.os.Handler
 import android.util.Log
 import androidx.room.Room
 import org.json.JSONArray
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val TAG = MainActivity::class.java.simpleName
@@ -13,23 +14,28 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        readQuestions()
+        readQuestions()
         /*val db = Room.databaseBuilder(
             this,
             QuizDatabase::class.java,
             "quiz.db"
         ).build()*/
+//        addTest()
+    }
+
+    private fun addTest() {
         val db = QuizDatabase.getInstance(this)
         Thread(
             Runnable {
                 val id = db?.quizDao()?.add(
                     Quiz(
                         "aa",
-                        1)
+                        1
                     )
+                )
                 Log.d(TAG, "Quiz id: $id");
                 //test answers
-                id?.also {quizId ->
+                id?.also { quizId ->
                     val answers = listOf<Answer>(
                         Answer(quizId, "xxxxx"),
                         Answer(quizId, "yyyy"),
@@ -56,13 +62,23 @@ class MainActivity : AppCompatActivity() {
             val q = obj.getString("question")
             val correct = obj.getInt("correct")
             val answers = obj.getJSONArray("answers")
-            val baggg = mutableListOf<String>()
+            val baggg = mutableListOf<Answer>()
             for (j in 0..answers.length()-1) {
                 Log.d(TAG, "Answer: ${answers.getString(j)}");
-                baggg.add(answers.getString(j))
+                baggg.add(Answer(text = answers.getString(j)))
             }
-            bag.add(Quiz( q, correct))
+            val quiz = Quiz( q, correct)
+            bag.add(quiz)
             Log.d(TAG, "question: $q $correct $answers");
+            thread {
+                QuizDatabase.getInstance(this).quizDao().apply {
+                    val quizId = add(quiz)
+                    baggg.forEach {
+                        it.quizId = quizId
+                    }
+                    val ids = insertAnswers(baggg)
+                }
+            }
         }
 
     }

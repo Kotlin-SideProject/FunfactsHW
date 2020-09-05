@@ -9,15 +9,15 @@ import androidx.room.RoomDatabase
 abstract class QuizDatabase : RoomDatabase() {
     abstract fun quizDao() : QuizDao
     companion object {
-        var instance : QuizDatabase? = null
-        fun getInstance(context: Context) :  QuizDatabase? {
+        private var instance : QuizDatabase? = null
+        fun getInstance(context: Context) :  QuizDatabase {
             if (instance == null) {
                 instance = Room.databaseBuilder(context,
                     QuizDatabase::class.java,
                     "quiz.db")
                     .build()
             }
-            return instance
+            return instance!!
         }
     }
 

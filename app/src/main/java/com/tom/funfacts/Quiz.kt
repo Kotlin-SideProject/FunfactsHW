@@ -15,7 +15,8 @@ data class Quiz(
 }
 
 @Entity
-class Answer(val quizId: Long, val text: String) {
+class Answer(var quizId: Long, val text: String) {
+    constructor(text: String) : this(-1, text)
     @PrimaryKey
     var id: Long? = null
 }
