@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface QuizDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(quiz: Quiz) : Long
+    suspend fun add(quiz: Quiz) : Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswers(answers: List<Answer>) : Array<Long>

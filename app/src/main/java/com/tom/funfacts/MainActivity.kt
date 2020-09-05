@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.room.Room
+import kotlinx.coroutines.Dispatchers
 import org.json.JSONArray
 import kotlin.concurrent.thread
 
@@ -70,6 +71,8 @@ class MainActivity : AppCompatActivity() {
             val quiz = Quiz( q, correct)
             bag.add(quiz)
             Log.d(TAG, "question: $q $correct $answers");
+//            Dispatchers.
+
             thread {
                 QuizDatabase.getInstance(this).quizDao().apply {
                     val quizId = add(quiz)
