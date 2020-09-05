@@ -8,8 +8,11 @@ import androidx.room.Query
 @Dao
 interface QuizDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(quiz: Quiz)
+    fun add(quiz: Quiz) : Long
 
-    @Query("select * from Quiz")
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAnswers(answers: List<Answer>) : Array<Long>
+
+    @Query("select * from quizs")
     fun getAll() : List<Quiz>
 }

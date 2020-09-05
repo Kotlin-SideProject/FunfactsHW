@@ -2,6 +2,7 @@ package com.tom.funfacts
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.room.Room
 import org.json.JSONArray
@@ -13,17 +14,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 //        readQuestions()
-        val db = Room.databaseBuilder(
+        /*val db = Room.databaseBuilder(
             this,
             QuizDatabase::class.java,
             "quiz.db"
-        ).build()
-        db.quizDao().add(
-            Quiz(1,
-                "aa",
-                "xxyyzz",
-//                listOf("xx","yy","zz"),
-                1))
+        ).build()*/
+        val db = QuizDatabase.getInstance(this)
+        Thread(
+            Runnable {
+                val id = db?.quizDao()?.add(
+                    Quiz(
+                        "aa",
+                        1)
+                    )
+                Log.d(TAG, "Quiz id: $id");
+                //test answers
+                id?.also {quizId ->
+                    val answers = listOf<Answer>(
+                        Answer(quizId, "xxxxx"),
+                        Answer(quizId, "yyyy"),
+                        Answer(quizId, "zzzz")
+                    )
+                    val ids = db?.quizDao()?.insertAnswers(answers)
+                    Log.d(TAG, "ids: $ids");
+                }
+
+            }
+        ).start()
     }
 
     private fun readQuestions() {
@@ -44,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Answer: ${answers.getString(j)}");
                 baggg.add(answers.getString(j))
             }
-            bag.add(Quiz(1, q, "xxyyzz", correct))
+            bag.add(Quiz( q, correct))
             Log.d(TAG, "question: $q $correct $answers");
         }
 
