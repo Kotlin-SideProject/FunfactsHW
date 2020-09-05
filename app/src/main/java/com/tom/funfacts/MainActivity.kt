@@ -9,10 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_quiz_list.*
 import kotlinx.android.synthetic.main.row_quiz.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,25 +28,39 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: MainActivity.QuizAdapter
     val TAG = MainActivity::class.java.simpleName
     lateinit var quizs : List<Quiz>
+    var logon = true
+    lateinit var currentFragment: Fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        CoroutineScope(Dispatchers.IO).launch {
-            val json = URL("http://dummy.restapiexample.com/api/v1/employees")
-                .readText()
-            Log.d(TAG, ":$json ");
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            quizs = QuizDatabase.getInstance(this@MainActivity)
-                .quizDao().getAll()
-            quizs.forEach {
-                Log.d(TAG, ":${it.question} ");
+        ////未登入時，顯示 LoginFragment，待設計
+        if (!logon) {
+
+        } else {
+            //replace Fragment
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.container, QuizListFragment.instance)
+                commit()
+                currentFragment = QuizListFragment.instance
             }
-            adapter = QuizAdapter()
-            withContext(Dispatchers.Main) {
-                recycler.setHasFixedSize(true)
-                recycler.layoutManager = LinearLayoutManager(this@MainActivity)
-                recycler.adapter = adapter
+            CoroutineScope(Dispatchers.IO).launch {
+                val json = URL("http://dummy.restapiexample.com/api/v1/employees")
+                    .readText()
+                Log.d(TAG, ":$json ");
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                quizs = QuizDatabase.getInstance(this@MainActivity)
+                    .quizDao().getAll()
+                quizs.forEach {
+                    Log.d(TAG, ":${it.question} ");
+                }
+                adapter = QuizAdapter()
+                withContext(Dispatchers.Main) {
+                    val recycler = (currentFragment as QuizListFragment).recycler
+                    recycler.setHasFixedSize(true)
+                    recycler.layoutManager = LinearLayoutManager(this@MainActivity)
+                    recycler.adapter = adapter
+                }
             }
         }
 //        readQuestions()
